@@ -27,4 +27,4 @@ Go 以简明的语法、丰富的内置类型、极高的并发性能，成为�
 
 ### License
 
-etcd is under the MIT license. See the [LICENSE](LICENSE) file for details.
+under the MIT license. See the [LICENSE](LICENSE) file for details.

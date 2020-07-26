@@ -1,0 +1,37 @@
+#%RAML 0.8
+title: Tracking
+baseUri: http://dddsample.marcusoncode.se/tracking/{version}
+version: v1
+
+/cargos:
+  /{trackingId}:
+    uriParameters:
+      trackingId:
+        description: The tracking id of the cargo
+        type: string
+    get:
+      description: A specific cargo
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                    "cargo": {
+                        "tracking_id": "B075CD13",
+                        "status_text": "Not received",
+                        "origin": "DEHAM",
+                        "destination": "SESTO",
+                        "eta": "2016-03-22T19:24:24.686283448Z",
+                        "next_expected_activity": "Next expected activity is to receive cargo in DEHAM.",
+                        "arrival_deadline": "2016-04-08T22:00:00Z",
+                        "events": null
+                    }
+                }
+        404:
+          body:
+            application/json:
+              example: |
+                {
+                    "error": "unknown cargo"
+                }
