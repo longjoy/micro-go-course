@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/longjoy/micro-go-course/section08/user/endpoint"
+	"github.com/longjoy/micro-go-course/cargo/endpoint"
+	"io/ioutil"
 	"net/http"
 	"os"
 )
@@ -18,7 +20,7 @@ var (
 )
 
 // MakeHttpHandler make http handler use mux
-func MakeHttpHandler(ctx context.Context, endpoints *endpoint.UserEndpoints) http.Handler {
+func MakeHttpHandler(ctx context.Context, endpoints *endpoint.CargoEndpoints) http.Handler {
 	r := mux.NewRouter()
 
 	kitLog := log.NewLogfmtLogger(os.Stderr)
@@ -31,60 +33,156 @@ func MakeHttpHandler(ctx context.Context, endpoints *endpoint.UserEndpoints) htt
 		kithttp.ServerErrorEncoder(encodeError),
 	}
 
-	r.Methods("POST").Path("/register").Handler(kithttp.NewServer(
-		endpoints.RegisterEndpoint,
-		decodeRegisterRequest,
+	r.Methods("GET").Path("/locations").Handler(kithttp.NewServer(
+		endpoints.LocationsEndpoint,
+		nil,
+		encodeJSONResponse,
+		options...,
+	))
+	r.Methods("POST").Path("/incidents").Handler(kithttp.NewServer(
+		endpoints.RegisterHandlingEventEndpoint,
+		decodeRegisterHandlingEventRequest,
 		encodeJSONResponse,
 		options...,
 	))
 
-
-	r.Methods("POST").Path("/login").Handler(kithttp.NewServer(
-		endpoints.LoginEndpoint,
-		decodeLoginRequest,
+	r.Methods("GET").PathPrefix("/cargos").Path("/").Handler(kithttp.NewServer(
+		endpoints.LoadCargoEndpoint,
+		decodeLoadCargoRequest,
 		encodeJSONResponse,
 		options...,
 	))
 
+	r.Methods("POST").PathPrefix("/cargos").Path("/change_destination").Handler(kithttp.NewServer(
+		endpoints.ChangeDestinationEndpoint,
+		decodeChangeDestinationRequest,
+		encodeJSONResponse,
+		options...,
+	))
 
+	r.Methods("POST").PathPrefix("/cargos").Path("/").Handler(kithttp.NewServer(
+		endpoints.AssignCargoToRouteEndpoint,
+		decodeAssignCargoToRouteRequest,
+		encodeJSONResponse,
+		options...,
+	))
+
+	r.Methods("POST").PathPrefix("/cargos").Path("/assign_to_route").Handler(kithttp.NewServer(
+		endpoints.BookCargoEndpoint,
+		decodeBookCargoRequest,
+		encodeJSONResponse,
+		options...,
+	))
 
 	return r
 }
-func decodeRegisterRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	username := r.FormValue("username")
-	password := r.FormValue("password")
-	email := r.FormValue("email")
-
-	if username == "" || password == "" || email == ""{
-		return nil, ErrorBadRequest
+func decodeBookCargoRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Printf("read body err, %v\n", err)
+		return nil, err
 	}
-	return &endpoint.RegisterRequest{
-		Username:username,
-		Password:password,
-		Email:email,
-	},nil
+	println("json:", string(body))
+
+	var bcr endpoint.BookCargoRequest
+	if err = json.Unmarshal(body, &bcr); err != nil {
+		fmt.Printf("Unmarshal err, %v\n", err)
+		return nil, err
+	}
+	fmt.Printf("%+v", bcr)
+
+	return &endpoint.BookCargoRequest{
+		Origin:      bcr.Origin,
+		Destination: bcr.Destination,
+		Deadline:    bcr.Deadline,
+	}, nil
 }
 
-
-func decodeLoginRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-
-	if email == "" || password == "" {
-		return nil, ErrorBadRequest
+func decodeAssignCargoToRouteRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Printf("read body err, %v\n", err)
+		return nil, err
 	}
-	return &endpoint.LoginRequest{
-		Email:email,
-		Password:password,
-	},nil
+	println("json:", string(body))
+
+	var acr endpoint.AssignCargoToRouteRequest
+	if err = json.Unmarshal(body, &acr); err != nil {
+		fmt.Printf("Unmarshal err, %v\n", err)
+		return nil, err
+	}
+	fmt.Printf("%+v", acr)
+	return &endpoint.AssignCargoToRouteRequest{
+		Id:        acr.Id,
+		Itinerary: acr.Itinerary,
+	}, nil
+}
+func decodeLoadCargoRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Printf("read body err, %v\n", err)
+		return nil, err
+	}
+	println("json:", string(body))
+
+	var lcr endpoint.LoadCargoRequest
+	if err = json.Unmarshal(body, &lcr); err != nil {
+		fmt.Printf("Unmarshal err, %v\n", err)
+		return nil, err
+	}
+	fmt.Printf("%+v", lcr)
+	return &endpoint.LoadCargoRequest{
+		Id: lcr.Id,
+	}, nil
+}
+
+func decodeChangeDestinationRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Printf("read body err, %v\n", err)
+		return nil, err
+	}
+	println("json:", string(body))
+
+	var cdr endpoint.ChangeDestinationRequest
+	if err = json.Unmarshal(body, &cdr); err != nil {
+		fmt.Printf("Unmarshal err, %v\n", err)
+		return nil, err
+	}
+	fmt.Printf("%+v", cdr)
+	return &endpoint.ChangeDestinationRequest{
+		Id:          cdr.Id,
+		Destination: cdr.Destination,
+	}, nil
+}
+
+func decodeRegisterHandlingEventRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Printf("read body err, %v\n", err)
+		return nil, err
+	}
+	println("json:", string(body))
+
+	var rhe endpoint.RegisterHandlingEventRequest
+	if err = json.Unmarshal(body, &rhe); err != nil {
+		fmt.Printf("Unmarshal err, %v\n", err)
+		return nil, err
+	}
+	fmt.Printf("%+v", rhe)
+	return &endpoint.RegisterHandlingEventRequest{
+		Id:           rhe.Id,
+		Completed:    rhe.Completed,
+		VoyageNumber: rhe.VoyageNumber,
+		UnLocode:     rhe.UnLocode,
+		EventType:    rhe.EventType,
+	}, nil
 }
 
 func encodeJSONResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	return json.NewEncoder(w).Encode(response)
 }
-
-
 
 func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -96,4 +194,3 @@ func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 		"error": err.Error(),
 	})
 }
-

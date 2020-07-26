@@ -55,7 +55,7 @@ func (s *loggingService) RequestPossibleRoutesForCargo(id shipping.TrackingID) [
 	return s.next.RequestPossibleRoutesForCargo(id)
 }
 
-func (s *loggingService) AssignCargoToRoute(id shipping.TrackingID, itinerary shipping.Itinerary) (err error) {
+func (s *loggingService) AssignCargoToRoute(id shipping.TrackingID, itinerary shipping.Itinerary) (res bool, err error) {
 	defer func(begin time.Time) {
 		s.logger.Log(
 			"method", "assign_to_route",
@@ -67,7 +67,7 @@ func (s *loggingService) AssignCargoToRoute(id shipping.TrackingID, itinerary sh
 	return s.next.AssignCargoToRoute(id, itinerary)
 }
 
-func (s *loggingService) ChangeDestination(id shipping.TrackingID, l shipping.UNLocode) (err error) {
+func (s *loggingService) ChangeDestination(id shipping.TrackingID, l shipping.UNLocode) (res bool, err error) {
 	defer func(begin time.Time) {
 		s.logger.Log(
 			"method", "change_destination",

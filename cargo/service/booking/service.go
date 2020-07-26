@@ -27,10 +27,10 @@ type Service interface {
 
 	// AssignCargoToRoute assigns a cargo to the route specified by the
 	// itinerary.
-	AssignCargoToRoute(id shipping.TrackingID, itinerary shipping.Itinerary) error
+	AssignCargoToRoute(id shipping.TrackingID, itinerary shipping.Itinerary) (bool, error)
 
 	// ChangeDestination changes the destination of a shipping.
-	ChangeDestination(id shipping.TrackingID, destination shipping.UNLocode) error
+	ChangeDestination(id shipping.TrackingID, destination shipping.UNLocode) (bool, error)
 
 	// Cargos returns a list of all cargos that have been booked.
 	Cargos() []Cargo
@@ -46,14 +46,14 @@ type service struct {
 	routingService shipping.RoutingService
 }
 
-func (s *service) AssignCargoToRoute(id shipping.TrackingID, itinerary shipping.Itinerary) error {
+func (s *service) AssignCargoToRoute(id shipping.TrackingID, itinerary shipping.Itinerary) (bool, error) {
 	if id == "" || len(itinerary.Legs) == 0 {
-		return ErrInvalidArgument
+		return false, ErrInvalidArgument
 	}
 
 	c, err := s.cargos.Find(id)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	c.AssignToRoute(itinerary)
@@ -75,7 +75,7 @@ func (s *service) BookNewCargo(origin, destination shipping.UNLocode, deadline t
 
 	c := shipping.NewCargo(id, rs)
 
-	if err := s.cargos.Store(c); err != nil {
+	if _, err := s.cargos.Store(c); err != nil {
 		return "", err
 	}
 
@@ -95,19 +95,19 @@ func (s *service) LoadCargo(id shipping.TrackingID) (Cargo, error) {
 	return assemble(c, s.handlingEvents), nil
 }
 
-func (s *service) ChangeDestination(id shipping.TrackingID, destination shipping.UNLocode) error {
+func (s *service) ChangeDestination(id shipping.TrackingID, destination shipping.UNLocode) (bool, error) {
 	if id == "" || destination == "" {
-		return ErrInvalidArgument
+		return false, ErrInvalidArgument
 	}
 
 	c, err := s.cargos.Find(id)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	l, err := s.locations.Find(destination)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	c.SpecifyNewRoute(shipping.RouteSpecification{
@@ -116,11 +116,11 @@ func (s *service) ChangeDestination(id shipping.TrackingID, destination shipping
 		ArrivalDeadline: c.RouteSpecification.ArrivalDeadline,
 	})
 
-	if err := s.cargos.Store(c); err != nil {
-		return err
+	if _, err := s.cargos.Store(c); err != nil {
+		return false, err
 	}
 
-	return nil
+	return true, nil
 }
 
 func (s *service) RequestPossibleRoutesForCargo(id shipping.TrackingID) []shipping.Itinerary {

@@ -12,7 +12,7 @@ type cargoRepository struct {
 	session *mgo.Session
 }
 
-func (r *cargoRepository) Store(cargo *shipping.Cargo) error {
+func (r *cargoRepository) Store(cargo *shipping.Cargo) (bool, error) {
 	sess := r.session.Copy()
 	defer sess.Close()
 
@@ -20,7 +20,7 @@ func (r *cargoRepository) Store(cargo *shipping.Cargo) error {
 
 	_, err := c.Upsert(bson.M{"trackingid": cargo.TrackingID}, bson.M{"$set": cargo})
 
-	return err
+	return true, err
 }
 
 func (r *cargoRepository) Find(id shipping.TrackingID) (*shipping.Cargo, error) {
@@ -117,7 +117,7 @@ func (r *locationRepository) FindAll() []*shipping.Location {
 	return result
 }
 
-func (r *locationRepository) store(l *shipping.Location) error {
+func (r *locationRepository) store(l *shipping.Location) (bool, error) {
 	sess := r.session.Copy()
 	defer sess.Close()
 
@@ -125,7 +125,7 @@ func (r *locationRepository) store(l *shipping.Location) error {
 
 	_, err := c.Upsert(bson.M{"unlocode": l.UNLocode}, bson.M{"$set": l})
 
-	return err
+	return true, err
 }
 
 // NewLocationRepository returns a new instance of a MongoDB location repository.
@@ -190,7 +190,7 @@ func (r *voyageRepository) Find(voyageNumber shipping.VoyageNumber) (*shipping.V
 	return &result, nil
 }
 
-func (r *voyageRepository) store(v *shipping.Voyage) error {
+func (r *voyageRepository) store(v *shipping.Voyage) (bool, error) {
 	sess := r.session.Copy()
 	defer sess.Close()
 
@@ -198,7 +198,7 @@ func (r *voyageRepository) store(v *shipping.Voyage) error {
 
 	_, err := c.Upsert(bson.M{"number": v.VoyageNumber}, bson.M{"$set": v})
 
-	return err
+	return true, err
 }
 
 // NewVoyageRepository returns a new instance of a MongoDB voyage repository.

@@ -190,7 +190,7 @@ func storeTestData(r shipping.CargoRepository) {
 		Destination:     shipping.SESTO,
 		ArrivalDeadline: time.Now().AddDate(0, 0, 7),
 	})
-	if err := r.Store(test1); err != nil {
+	if _, err := r.Store(test1); err != nil {
 		panic(err)
 	}
 
@@ -199,7 +199,7 @@ func storeTestData(r shipping.CargoRepository) {
 		Destination:     shipping.CNHKG,
 		ArrivalDeadline: time.Now().AddDate(0, 0, 14),
 	})
-	if err := r.Store(test2); err != nil {
+	if _, err := r.Store(test2); err != nil {
 		panic(err)
 	}
 }

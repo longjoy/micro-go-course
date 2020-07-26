@@ -19,7 +19,7 @@ func NewLoggingService(logger log.Logger, s Service) Service {
 }
 
 func (s *loggingService) RegisterHandlingEvent(completed time.Time, id shipping.TrackingID, voyageNumber shipping.VoyageNumber,
-	unLocode shipping.UNLocode, eventType shipping.HandlingEventType) (err error) {
+	unLocode shipping.UNLocode, eventType shipping.HandlingEventType) (res bool, err error) {
 	defer func(begin time.Time) {
 		s.logger.Log(
 			"method", "register_incident",

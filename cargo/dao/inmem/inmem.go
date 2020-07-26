@@ -12,11 +12,11 @@ type cargoRepository struct {
 	cargos map[shipping.TrackingID]*shipping.Cargo
 }
 
-func (r *cargoRepository) Store(c *shipping.Cargo) error {
+func (r *cargoRepository) Store(c *shipping.Cargo) (bool, error) {
 	r.mtx.Lock()
 	defer r.mtx.Unlock()
 	r.cargos[c.TrackingID] = c
-	return nil
+	return true, nil
 }
 
 func (r *cargoRepository) Find(id shipping.TrackingID) (*shipping.Cargo, error) {

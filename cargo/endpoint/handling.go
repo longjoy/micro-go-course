@@ -9,8 +9,8 @@ import (
 	"github.com/go-chi/chi"
 	kitlog "github.com/go-kit/kit/log"
 
-	"github.com/longjoy/micro-go-course/cargo/service/handling"
 	shipping "github.com/longjoy/micro-go-course/cargo/model"
+	"github.com/longjoy/micro-go-course/cargo/service/handling"
 )
 
 type handlingHandler struct {
@@ -43,7 +43,7 @@ func (h *handlingHandler) registerIncident(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err := h.s.RegisterHandlingEvent(
+	_, err := h.s.RegisterHandlingEvent(
 		request.CompletionTime,
 		shipping.TrackingID(request.TrackingID),
 		shipping.VoyageNumber(request.VoyageNumber),

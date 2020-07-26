@@ -54,7 +54,7 @@ func NewCargo(id TrackingID, rs RouteSpecification) *Cargo {
 
 // CargoRepository provides access a cargo store.
 type CargoRepository interface {
-	Store(cargo *Cargo) error
+	Store(cargo *Cargo) (bool, error)
 	Find(id TrackingID) (*Cargo, error)
 	FindAll() []*Cargo
 }

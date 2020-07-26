@@ -24,7 +24,7 @@ func NewInstrumentingService(counter metrics.Counter, latency metrics.Histogram,
 }
 
 func (s *instrumentingService) RegisterHandlingEvent(completed time.Time, id shipping.TrackingID, voyageNumber shipping.VoyageNumber,
-	loc shipping.UNLocode, eventType shipping.HandlingEventType) error {
+	loc shipping.UNLocode, eventType shipping.HandlingEventType) (bool, error) {
 
 	defer func(begin time.Time) {
 		s.requestCount.With("method", "register_incident").Add(1)

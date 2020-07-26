@@ -136,7 +136,7 @@ func (h *bookingHandler) assignToRoute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.s.AssignCargoToRoute(trackingID, request.Itinerary)
+	_, err := h.s.AssignCargoToRoute(trackingID, request.Itinerary)
 	if err != nil {
 		encodeError(ctx, err, w)
 		return
@@ -158,7 +158,7 @@ func (h *bookingHandler) changeDestination(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err := h.s.ChangeDestination(trackingID, request.Destination)
+	_, err := h.s.ChangeDestination(trackingID, request.Destination)
 	if err != nil {
 		encodeError(ctx, err, w)
 		return

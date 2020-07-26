@@ -23,7 +23,7 @@ type Service interface {
 	// RegisterHandlingEvent registers a handling event in the system, and
 	// notifies interested parties that a cargo has been handled.
 	RegisterHandlingEvent(completed time.Time, id shipping.TrackingID, voyageNumber shipping.VoyageNumber,
-		unLocode shipping.UNLocode, eventType shipping.HandlingEventType) error
+		unLocode shipping.UNLocode, eventType shipping.HandlingEventType) (bool, error)
 }
 
 type service struct {
@@ -33,20 +33,20 @@ type service struct {
 }
 
 func (s *service) RegisterHandlingEvent(completed time.Time, id shipping.TrackingID, voyageNumber shipping.VoyageNumber,
-	loc shipping.UNLocode, eventType shipping.HandlingEventType) error {
+	loc shipping.UNLocode, eventType shipping.HandlingEventType) (bool, error) {
 	if completed.IsZero() || id == "" || loc == "" || eventType == shipping.NotHandled {
-		return ErrInvalidArgument
+		return false, ErrInvalidArgument
 	}
 
 	e, err := s.handlingEventFactory.CreateHandlingEvent(time.Now(), completed, id, voyageNumber, loc, eventType)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	s.handlingEventRepository.Store(e)
 	s.handlingEventHandler.CargoWasHandled(e)
 
-	return nil
+	return true, nil
 }
 
 // NewService creates a handling event service with necessary dependencies.
