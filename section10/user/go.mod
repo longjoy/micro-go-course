@@ -1,4 +1,4 @@
-module github.com/longjoy/micro-go-course
+module github.com/longjoy/micro-go-course/section10/user
 
 go 1.14
 
