@@ -10,11 +10,6 @@ spec:
       image: user
       ports:
         - containerPort: 10086
-#        - name: http
-#            containerPort: 10086
-#            hostPort: 10086
-#            protocol: TCP
-#        - hostPort: 10086
       imagePullPolicy: IfNotPresent
     - name: mysql                     #定义MySQL容器，开放3306端口
       image: mysql-for-user
