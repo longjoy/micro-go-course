@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/longjoy/micro-go-course/section11/user/dao"
 	"github.com/longjoy/micro-go-course/section11/user/endpoint"
-	"github.com/longjoy/micro-go-course/section11/user/redis"
+	//"github.com/longjoy/micro-go-course/section11/user/redis"
 	"github.com/longjoy/micro-go-course/section11/user/service"
 	"github.com/longjoy/micro-go-course/section11/user/transport"
 	"log"
@@ -35,15 +35,15 @@ func main()  {
 	ctx := context.Background()
 	errChan := make(chan error)
 
-	err := dao.InitMysql("127.0.0.1", "3306", "root", "123456", "user")
-	if err != nil{
-		log.Fatal(err)
-	}
-
-	err = redis.InitRedis("127.0.0.1","6379", "" )
-	if err != nil{
-		log.Fatal(err)
-	}
+	//err := dao.InitMysql("127.0.0.1", "3306", "root", "123456", "user")
+	//if err != nil{
+	//	log.Fatal(err)
+	//}
+	//
+	//err = redis.InitRedis("127.0.0.1","6379", "" )
+	//if err != nil{
+	//	log.Fatal(err)
+	//}
 
 	userService := service.MakeUserServiceImpl(&dao.UserDAOImpl{})
 
