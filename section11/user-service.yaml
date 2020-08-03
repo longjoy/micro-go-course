@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: user-service
+  labels:
+    name: user-service
+spec:
+  containers:                    #定义User容器，开放10086端口
+    - name: user
+      image: user
+      ports:
+        - containerPort: 10086
+      imagePullPolicy: IfNotPresent
+    - name: mysql                     #定义MySQL容器，开放3306端口
+      image: mysql-for-user
+      ports:
+        - containerPort: 3306
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "123456"
+      imagePullPolicy: IfNotPresent
+    - name: redis                     #定义Redis容器，开放6379端口
+      image: redis:5.0
+      ports:
+        - containerPort: 6379
+      imagePullPolicy: IfNotPresent
+
+
+
+

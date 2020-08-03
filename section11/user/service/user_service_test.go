@@ -2,15 +2,15 @@ package service
 
 import (
 	"context"
-	"github.com/longjoy/micro-go-course/section10/user/dao"
-	"github.com/longjoy/micro-go-course/section10/user/redis"
+	"github.com/longjoy/micro-go-course/section11/user/dao"
+	"github.com/longjoy/micro-go-course/section11/user/redis"
 	"testing"
 )
 
 func TestUserServiceImpl_Login(t *testing.T) {
 
 
-	err := dao.InitMysql("127.0.0.1", "3306", "root", "xuan", "user")
+	err := dao.InitMysql("127.0.0.1", "3306", "root", "123456", "user")
 	if err != nil{
 		t.Error(err)
 		t.FailNow()
@@ -41,7 +41,7 @@ func TestUserServiceImpl_Login(t *testing.T) {
 func TestUserServiceImpl_Register(t *testing.T) {
 
 
-	err := dao.InitMysql("127.0.0.1", "3306", "root", "xuan", "user")
+	err := dao.InitMysql("127.0.0.1", "3306", "root", "123456", "user")
 	if err != nil{
 		t.Error(err)
 		t.FailNow()
