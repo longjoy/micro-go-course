@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  labels:
+    name: user-service
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      name: user-service
+  template:
+    metadata:
+      labels:
+        name: user-service
+    spec:
+      containers:                    #定义User容器，开放10086端口
+        - name: user
+          image: aoho/user:<COMMIT_ID_TAG>
+          ports:
+            - containerPort: 10086
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: mysqlAddr
+              value: <MYSQL_ADDR_TAG>
+            - name: redisAddr
+              value: <REDIS_ADDR_TAG>
+
+
+
+
+
+
