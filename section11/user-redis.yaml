@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: user-redis
+ labels:
+  name: user-redis
+spec:
+ replicas: 1
+ strategy:
+  type: RollingUpdate
+ selector:
+  matchLabels:
+   name: user-redis
+ template:
+  metadata:
+   labels:
+    name: user-redis
+  spec:
+   containers:                    #定义Redis容器，开放6379端口
+    - name: user-redis
+      image: redis:5.0
+      ports:
+       - containerPort: 6379
+      imagePullPolicy: IfNotPresent

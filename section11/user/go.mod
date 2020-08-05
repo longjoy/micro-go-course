@@ -9,5 +9,4 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/gorm v1.9.14
-	github.com/longjoy/micro-go-course/section10/user v0.0.0-20200729142110-6fa0459f77d5
 )

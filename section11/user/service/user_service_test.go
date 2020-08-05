@@ -9,7 +9,6 @@ import (
 
 func TestUserServiceImpl_Login(t *testing.T) {
 
-
 	err := dao.InitMysql("127.0.0.1", "3306", "root", "123456", "user")
 	if err != nil{
 		t.Error(err)

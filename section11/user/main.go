@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/longjoy/micro-go-course/section11/user/dao"
 	"github.com/longjoy/micro-go-course/section11/user/endpoint"
-	//"github.com/longjoy/micro-go-course/section11/user/redis"
+	"github.com/longjoy/micro-go-course/section11/user/redis"
 	"github.com/longjoy/micro-go-course/section11/user/service"
 	"github.com/longjoy/micro-go-course/section11/user/transport"
 	"log"
@@ -26,6 +26,14 @@ func main()  {
 
 		//waitTime = flag.Int("wait.time", 10, "wait time")
 
+		mysqlAddr = flag.String("mysql.addr", "127.0.0.1", "mysql addr")
+
+		mysqlPort = flag.String("mysql.port", "3306", "mysql port")
+
+
+		redisAddr = flag.String("redis.addr", "127.0.0.1", "redis addr")
+
+		redisPort = flag.String("redis.port", "6379", "redis port")
 
 
 	)
@@ -35,15 +43,15 @@ func main()  {
 	ctx := context.Background()
 	errChan := make(chan error)
 
-	//err := dao.InitMysql("127.0.0.1", "3306", "root", "123456", "user")
-	//if err != nil{
-	//	log.Fatal(err)
-	//}
-	//
-	//err = redis.InitRedis("127.0.0.1","6379", "" )
-	//if err != nil{
-	//	log.Fatal(err)
-	//}
+	err := dao.InitMysql(*mysqlAddr, *mysqlPort, "root", "123456", "user")
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	err = redis.InitRedis(*redisAddr, *redisPort, "" )
+	if err != nil{
+		log.Fatal(err)
+	}
 
 	userService := service.MakeUserServiceImpl(&dao.UserDAOImpl{})
 
