@@ -64,23 +64,23 @@ func main()  {
 		errChan <- fmt.Errorf("%s", <-c)
 	}()
 
-	instanceId := *serviceName + "-ku" + uuid.New().String()
+	instanceId := *serviceName + "-" + uuid.New().String()
 	err := client.Register(context.Background(), *serviceName, instanceId, "/health", *serviceAddr, *servicePort, nil, nil)
 
 
-	//if err != nil{
-	//	log.Printf("register serviceName : %s", err)
-	//	os.Exit(-1)
-	//}
+	if err != nil{
+		log.Printf("register service err : %s", err)
+		os.Exit(-1)
+	}
 
 	err = <-errChan
 	log.Printf("listen err : %s", err)
-	//client.Deregister(context.Background(), instanceId)
+	client.Deregister(context.Background(), instanceId)
 
 }
 
 func init(){
-	file := "./" +"message"+ ".txt"
+	file := "./" +"register.log"
 	logFile, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
 	if err != nil {
 		panic(err)

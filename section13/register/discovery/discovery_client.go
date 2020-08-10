@@ -123,6 +123,7 @@ func (consulClient *DiscoveryClient) Deregister(ctx context.Context, instanceId 
 	}
 
 	client := http.Client{}
+	client.Timeout = time.Second * 2
 
 	resp, err := client.Do(req)
 
@@ -137,6 +138,8 @@ func (consulClient *DiscoveryClient) Deregister(ctx context.Context, instanceId 
 		log.Printf("deresigister service http request errCode : %v", resp.StatusCode)
 		return fmt.Errorf("deresigister service http request errCode : %v", resp.StatusCode)
 	}
+
+	log.Println("deregister service success")
 
 	return nil
 }
@@ -154,6 +157,8 @@ func (consulClient *DiscoveryClient) DiscoverServices(ctx context.Context, servi
 	}
 
 	client := http.Client{}
+	client.Timeout = time.Second * 2
+
 
 	resp, err := client.Do(req)
 	if err != nil {
