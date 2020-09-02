@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: user-mysql
+ labels:
+  name: user-mysql
+spec:
+ replicas: 1
+ strategy:
+  type: RollingUpdate
+ selector:
+  matchLabels:
+   name: user-mysql
+ template:
+  metadata:
+   labels:
+    name: user-mysql
+  spec:
+   containers:                    #定义Redis容器，开放6379端口
+    - name: user-mysql
+      image: mysql-for-user
+      ports:
+       - containerPort: 3306
+      env:
+       - name: MYSQL_ROOT_PASSWORD
+         value: "123456"
+      imagePullPolicy: IfNotPresent

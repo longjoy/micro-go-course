@@ -1,0 +1,46 @@
+node {
+
+
+    script {
+        mysql_addr = '127.0.0.1' // service cluster ip
+        redis_addr = '127.0.0.1' // service cluster ip
+        user_addr = '127.0.0.1:30036' // nodeIp : port
+    }
+
+    // 使用 Jenkinsfile 会关联 Git 仓库，代码已经一起拉下来
+    stage('get commit_id from github') {
+        echo "first stage: get commit_id"
+        script {
+            commit_id = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+        }
+    }
+
+
+    stage('build image') {
+        echo "second stage: build docker image"
+        sh "docker build -t aoho/user:${commit_id} section11/user/"
+    }
+
+
+    stage('push image') {
+        echo "third stage: push docker image to registry"
+        sh "docker login -u aoho -p xxxxxx"
+        sh "docker push aoho/user:${commit_id}"
+    }
+
+    stage('deploy to Kubernetes') {
+        echo "forth stage: deploy to Kubernetes"
+        sh "sed -i 's/<COMMIT_ID_TAG>/${commit_id}/' user-service.yaml"
+        sh "sed -i 's/<MYSQL_ADDR_TAG>/${mysql_addr}/' user-service.yaml"
+        sh "sed -i 's/<REDIS_ADDR_TAG>/${redis_addr}/' user-service.yaml"
+        sh "kubectl apply -f user.yaml"
+    }
+
+
+    stage('http test') {
+        echo "fifth stage: http test"
+        sh "cd section11/user/transport && go test  -args ${user_addr}"
+    }
+
+
+}

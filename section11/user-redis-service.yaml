@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+ name: user-redis-service
+spec:
+ selector:
+  name: user-redis
+ ports:
+  - protocol: TCP
+    port: 6379
+    targetPort: 6379
+    name: user-redis-tcp
