@@ -1,0 +1,12 @@
+GET http://localhost:9099/cargo-service/locations
+Accept: application/json
+
+
+
+###
+POST http://localhost:9099/cargo-service/cargos/
+Content-Type: application/json
+
+{
+  "Id": "ABC123"
+}

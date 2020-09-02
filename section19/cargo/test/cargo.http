@@ -1,0 +1,12 @@
+GET http://localhost:8080/locations
+Accept: application/json
+
+###
+POST http://localhost:8080/cargos/
+Content-Type: application/json
+
+{
+  "Id": "ABC123"
+}
+
+###
