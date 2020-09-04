@@ -12,7 +12,7 @@
 *.test
 hack/tls-setup/certs
 .idea
-
+.DS_Store
 vendor/**/*
 !vendor/**/
 !vendor/**/*.go
