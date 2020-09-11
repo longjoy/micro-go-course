@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: register
+  labels:
+    name: register
+spec:
+  selector:
+    matchLabels:
+      name: register
+  replicas: 1
+  template:
+    metadata:
+      name: register
+      labels:
+        name: register
+        app: register
+    spec:
+      containers:
+        - name: register
+          image: register
+          ports:
+            - containerPort: 12312
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: consulAddr
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: serviceAddr
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: register-service
+  labels:
+    name: register-service
+spec:
+  selector:
+    name: register
+  ports:
+    - protocol: TCP
+      port: 12312
+      targetPort: 12312
+      name: register-service-http
