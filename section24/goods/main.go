@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/afex/hystrix-go/hystrix"
 	"github.com/longjoy/micro-go-course/section24/goods/endpoint"
 	"github.com/longjoy/micro-go-course/section24/goods/service"
 	"github.com/longjoy/micro-go-course/section24/goods/transport"
@@ -29,6 +30,10 @@ func main() {
 		GoodsDetailEndpoint: endpoint.MakeGoodsDetailEndpoint(srv),
 	}
 	handler := transport.MakeHttpHandler(context.Background(), &endpoints)
+
+	hystrix.ConfigureCommand("Comments", hystrix.CommandConfig{
+		RequestVolumeThreshold: 4,
+	})
 
 	go func() {
 		errChan <- http.ListenAndServe(":"+strconv.Itoa(*servicePort), handler)
