@@ -4,9 +4,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/longjoy/micro-go-course/section24/goods/endpoint"
-	"github.com/longjoy/micro-go-course/section24/goods/service"
-	"github.com/longjoy/micro-go-course/section24/goods/transport"
+	"github.com/longjoy/micro-go-course/section25/goods/endpoint"
+	"github.com/longjoy/micro-go-course/section25/goods/service"
+	"github.com/longjoy/micro-go-course/section25/goods/transport"
+	"golang.org/x/time/rate"
 	"log"
 	"net/http"
 	"os"
@@ -25,8 +26,10 @@ func main() {
 
 	srv := service.NewGoodsServiceImpl()
 
+	limiter := rate.NewLimiter(1, 1)
+
 	endpoints := endpoint.GoodsEndpoints{
-		GoodsDetailEndpoint: endpoint.MakeGoodsDetailEndpoint(srv),
+		GoodsDetailEndpoint: endpoint.MakeGoodsDetailEndpoint(srv, limiter),
 	}
 	handler := transport.MakeHttpHandler(context.Background(), &endpoints)
 

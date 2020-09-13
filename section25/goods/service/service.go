@@ -4,11 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/afex/hystrix-go/hystrix"
-	"github.com/longjoy/micro-go-course/section24/goods/common"
+	"github.com/longjoy/micro-go-course/section25/goods/common"
+	"go.etcd.io/etcd/clientv3"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
+	"time"
 )
 
 type GoodsDetailVO struct {
@@ -25,12 +29,18 @@ func NewGoodsServiceImpl() Service {
 	return &GoodsDetailServiceImpl{}
 }
 
-type GoodsDetailServiceImpl struct{}
+type GoodsDetailServiceImpl struct {
+	callCommentService int
+}
 
 func (service *GoodsDetailServiceImpl) GetGoodsDetail(ctx context.Context, id string) (GoodsDetailVO, error) {
 	detail := GoodsDetailVO{Id: id, Name: "Name"}
+
+	if service.callCommentService != 0 {
+		detail.Comments, _ = GetGoodsComments(id)
+	}
+
 	var err error
-	detail.Comments, err = GetGoodsComments(id)
 	if err != nil {
 		return detail, err
 	}
@@ -65,5 +75,30 @@ func GetGoodsComments(id string) (common.CommentListVO, error) {
 		return result, nil
 	} else {
 		return result, err
+	}
+}
+
+func (service *GoodsDetailServiceImpl) InitConfig(ctx context.Context) {
+	cli, _ := clientv3.New(clientv3.Config{
+		Endpoints:   []string{"127.0.0.1:2379"},
+		DialTimeout: 5 * time.Second,
+	})
+	// get
+	resp, _ := cli.Get(ctx, "call_service_d")
+	for _, ev := range resp.Kvs {
+		fmt.Printf("%s:%s\n", ev.Key, ev.Value)
+		if string(ev.Key) == "call_service_d" {
+			service.callCommentService, _ = strconv.Atoi(string(ev.Value))
+		}
+	}
+
+	rch := cli.Watch(context.Background(), "call_service_d") // <-chan WatchResponse
+	for wresp := range rch {
+		for _, ev := range wresp.Events {
+			fmt.Printf("Type: %s Key:%s Value:%s\n", ev.Type, ev.Kv.Key, ev.Kv.Value)
+			if string(ev.Kv.Key) == "call_service_d" {
+				service.callCommentService, _ = strconv.Atoi(string(ev.Kv.Value))
+			}
+		}
 	}
 }

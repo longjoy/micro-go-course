@@ -1,4 +1,4 @@
-module github.com/longjoy/micro-go-course/section14/register
+module github.com/longjoy/micro-go-course/section25/goods
 
 go 1.14
 

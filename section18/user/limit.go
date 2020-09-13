@@ -16,6 +16,7 @@ func NewTokenBucketLimitterWithBuildIn(bkt *rate.Limiter) endpoint.Middleware {
 			if !bkt.Allow() {
 				return nil, ErrLimitExceed
 			}
+
 			return next(ctx, request)
 		}
 	}

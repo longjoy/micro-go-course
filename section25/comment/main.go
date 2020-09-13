@@ -4,9 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/longjoy/micro-go-course/section24/goods/endpoint"
-	"github.com/longjoy/micro-go-course/section24/goods/service"
-	"github.com/longjoy/micro-go-course/section24/goods/transport"
+	"github.com/longjoy/micro-go-course/section25/goods/endpoint"
+	"github.com/longjoy/micro-go-course/section25/goods/service"
+	"github.com/longjoy/micro-go-course/section25/goods/transport"
 	"log"
 	"net/http"
 	"os"
@@ -17,7 +17,7 @@ import (
 
 func main() {
 
-	servicePort := flag.Int("service.port", 12312, "service port")
+	servicePort := flag.Int("service.port", 8081, "service port")
 
 	flag.Parse()
 
@@ -25,9 +25,10 @@ func main() {
 
 	srv := service.NewGoodsServiceImpl()
 
-	endpoints := endpoint.GoodsEndpoints{
-		GoodsDetailEndpoint: endpoint.MakeGoodsDetailEndpoint(srv),
+	endpoints := endpoint.CommentsEndpoints{
+		CommentsListEndpoint: endpoint.MakeCommentsListEndpoint(srv),
 	}
+
 	handler := transport.MakeHttpHandler(context.Background(), &endpoints)
 
 	go func() {

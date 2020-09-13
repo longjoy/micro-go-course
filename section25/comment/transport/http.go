@@ -8,7 +8,7 @@ import (
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/longjoy/micro-go-course/section14/register/endpoint"
+	"github.com/longjoy/micro-go-course/section25/goods/endpoint"
 	"net/http"
 	"os"
 )
@@ -18,7 +18,7 @@ var (
 )
 
 // MakeHttpHandler make http handler use mux
-func MakeHttpHandler(ctx context.Context, endpoints *endpoint.RegisterEndpoints) http.Handler {
+func MakeHttpHandler(ctx context.Context, endpoints *endpoint.CommentsEndpoints) http.Handler {
 	r := mux.NewRouter()
 
 	kitLog := log.NewLogfmtLogger(os.Stderr)
@@ -31,34 +31,23 @@ func MakeHttpHandler(ctx context.Context, endpoints *endpoint.RegisterEndpoints)
 		kithttp.ServerErrorEncoder(encodeError),
 	}
 
-	r.Methods("GET").Path("/health").Handler(kithttp.NewServer(
-		endpoints.HealthCheckEndpoint,
-		decodeHealthCheckRequest,
-		encodeJSONResponse,
-		options...,
-	))
-
-	r.Methods("GET").Path("/discovery/name").Handler(kithttp.NewServer(
-		endpoints.DiscoveryEndpoint,
-		decodeDiscoveryRequest,
+	r.Methods("GET").Path("/comments/detail").Handler(kithttp.NewServer(
+		endpoints.CommentsListEndpoint,
+		decodeCommentsListRequest,
 		encodeJSONResponse,
 		options...,
 	))
 	return r
 }
-func decodeDiscoveryRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	serviceName := r.URL.Query().Get("serviceName")
+func decodeCommentsListRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	id := r.URL.Query().Get("id")
 
-	if serviceName == "" {
+	if id == "" {
 		return nil, ErrorBadRequest
 	}
-	return endpoint.DiscoveryRequest{
-		ServiceName: serviceName,
+	return endpoint.CommentsListRequest{
+		Id: id,
 	}, nil
-}
-
-func decodeHealthCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	return endpoint.HealthRequest{}, nil
 }
 
 func encodeJSONResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
