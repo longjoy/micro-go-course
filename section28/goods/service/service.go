@@ -81,6 +81,8 @@ func (service *GoodsDetailServiceImpl) GetGoodsComments(ctx context.Context, id 
 
 	selectedInstance, err2 := service.loadbalancer.SelectService(instances)
 
+	log.Print("select instance info :" + selectedInstance.Address + ":" + strconv.Itoa(selectedInstance.Port))
+
 	if err2 != nil {
 		log.Printf("loadbalancer get selected instance  err: %s", err2)
 		return result, ErrLoadBalancer
@@ -95,28 +97,22 @@ func (service *GoodsDetailServiceImpl) GetGoodsComments(ctx context.Context, id 
 		}
 		resp, err := http.Get(requestUrl.String())
 		if err != nil {
-			log.Printf("dd123123" + err.Error())
 			return err
 		}
 		body, _ := ioutil.ReadAll(resp.Body)
-		log.Printf(string(body))
 		jsonErr := json.Unmarshal(body, &result)
 		if jsonErr != nil {
-			log.Printf("445" + jsonErr.Error())
 			return jsonErr
 		}
 		return nil
 	}, func(e error) error {
 		// 断路器打开时的处理逻辑，本示例是直接返回错误提示
-		log.Printf("dsdf")
 		return errors.New("Http errors！")
 	})
 
 	if call_err == nil {
-		log.Printf("023123")
 		return result, nil
 	} else {
-		log.Printf("023" + call_err.Error())
 		return result, call_err
 	}
 }

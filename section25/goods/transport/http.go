@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -41,7 +42,7 @@ func MakeHttpHandler(ctx context.Context, endpoints *endpoint.GoodsEndpoints) ht
 }
 func decodeGoodsDetailRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	id := r.URL.Query().Get("id")
-
+	fmt.Print("dfsf")
 	if id == "" {
 		return nil, ErrorBadRequest
 	}

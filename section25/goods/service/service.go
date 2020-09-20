@@ -9,6 +9,7 @@ import (
 	"github.com/longjoy/micro-go-course/section25/goods/common"
 	"go.etcd.io/etcd/clientv3"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -23,6 +24,7 @@ type GoodsDetailVO struct {
 
 type Service interface {
 	GetGoodsDetail(ctx context.Context, id string) (GoodsDetailVO, error)
+	InitConfig(ctx context.Context)
 }
 
 func NewGoodsServiceImpl() Service {
@@ -81,6 +83,7 @@ func GetGoodsComments(id string) (common.CommentResult, error) {
 }
 
 func (service *GoodsDetailServiceImpl) InitConfig(ctx context.Context) {
+	log.Printf("InitConfig")
 	cli, _ := clientv3.New(clientv3.Config{
 		Endpoints:   []string{"127.0.0.1:2379"},
 		DialTimeout: 5 * time.Second,

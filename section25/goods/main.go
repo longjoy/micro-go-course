@@ -18,15 +18,16 @@ import (
 
 func main() {
 
-	servicePort := flag.Int("service.port", 12312, "service port")
+	servicePort := flag.Int("service.port", 12313, "service port")
 
 	flag.Parse()
 
 	errChan := make(chan error)
 
 	srv := service.NewGoodsServiceImpl()
+	go srv.InitConfig(context.Background())
 
-	limiter := rate.NewLimiter(1, 1)
+	limiter := rate.NewLimiter(10, 10)
 
 	endpoints := endpoint.GoodsEndpoints{
 		GoodsDetailEndpoint: endpoint.MakeGoodsDetailEndpoint(srv, limiter),
