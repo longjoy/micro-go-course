@@ -8,7 +8,7 @@ import (
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/longjoy/micro-go-course/section25/comment/endpoint"
+	"github.com/longjoy/micro-go-course/section28/comment/endpoint"
 	"net/http"
 	"os"
 )
@@ -37,8 +37,21 @@ func MakeHttpHandler(ctx context.Context, endpoints *endpoint.CommentsEndpoints)
 		encodeJSONResponse,
 		options...,
 	))
+
+	r.Methods("GET").Path("/health").Handler(kithttp.NewServer(
+		endpoints.HealthCheckEndpoint,
+		decodeHealthCheckRequest,
+		encodeJSONResponse,
+		options...,
+	))
+
 	return r
 }
+
+func decodeHealthCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	return endpoint.HealthRequest{}, nil
+}
+
 func decodeCommentsListRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	id := r.URL.Query().Get("id")
 

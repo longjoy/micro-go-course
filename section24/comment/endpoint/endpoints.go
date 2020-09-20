@@ -3,7 +3,7 @@ package endpoint
 import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/longjoy/micro-go-course/section24/goods/service"
+	"github.com/longjoy/micro-go-course/section24/comment/service"
 )
 
 type CommentsEndpoints struct {

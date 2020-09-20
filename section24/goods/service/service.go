@@ -30,15 +30,16 @@ type GoodsDetailServiceImpl struct{}
 func (service *GoodsDetailServiceImpl) GetGoodsDetail(ctx context.Context, id string) (GoodsDetailVO, error) {
 	detail := GoodsDetailVO{Id: id, Name: "Name"}
 	var err error
-	detail.Comments, err = GetGoodsComments(id)
+	commonResult, err := GetGoodsComments(id)
+	detail.Comments = commonResult.Detail
 	if err != nil {
 		return detail, err
 	}
 	return detail, nil
 }
 
-func GetGoodsComments(id string) (common.CommentListVO, error) {
-	var result common.CommentListVO
+func GetGoodsComments(id string) (common.CommentResult, error) {
+	var result common.CommentResult
 	serviceName := "Comments"
 	err := hystrix.Do(serviceName, func() error {
 		requestUrl := url.URL{

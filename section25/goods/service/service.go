@@ -37,7 +37,9 @@ func (service *GoodsDetailServiceImpl) GetGoodsDetail(ctx context.Context, id st
 	detail := GoodsDetailVO{Id: id, Name: "Name"}
 
 	if service.callCommentService != 0 {
-		detail.Comments, _ = GetGoodsComments(id)
+		commentResult, _ := GetGoodsComments(id)
+		detail.Comments = commentResult.Detail
+
 	}
 
 	var err error
@@ -47,8 +49,8 @@ func (service *GoodsDetailServiceImpl) GetGoodsDetail(ctx context.Context, id st
 	return detail, nil
 }
 
-func GetGoodsComments(id string) (common.CommentListVO, error) {
-	var result common.CommentListVO
+func GetGoodsComments(id string) (common.CommentResult, error) {
+	var result common.CommentResult
 	serviceName := "Comments"
 	err := hystrix.Do(serviceName, func() error {
 		requestUrl := url.URL{

@@ -8,7 +8,7 @@ import (
 	"github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	"github.com/longjoy/micro-go-course/section25/comment/endpoint"
+	"github.com/longjoy/micro-go-course/section28/goods/endpoint"
 	"net/http"
 	"os"
 )
@@ -18,7 +18,7 @@ var (
 )
 
 // MakeHttpHandler make http handler use mux
-func MakeHttpHandler(ctx context.Context, endpoints *endpoint.CommentsEndpoints) http.Handler {
+func MakeHttpHandler(ctx context.Context, endpoints *endpoint.GoodsEndpoints) http.Handler {
 	r := mux.NewRouter()
 
 	kitLog := log.NewLogfmtLogger(os.Stderr)
@@ -31,21 +31,34 @@ func MakeHttpHandler(ctx context.Context, endpoints *endpoint.CommentsEndpoints)
 		kithttp.ServerErrorEncoder(encodeError),
 	}
 
-	r.Methods("GET").Path("/comments/detail").Handler(kithttp.NewServer(
-		endpoints.CommentsListEndpoint,
-		decodeCommentsListRequest,
+	r.Methods("GET").Path("/goods/detail").Handler(kithttp.NewServer(
+		endpoints.GoodsDetailEndpoint,
+		decodeGoodsDetailRequest,
 		encodeJSONResponse,
 		options...,
 	))
+
+	r.Methods("GET").Path("/health").Handler(kithttp.NewServer(
+		endpoints.HealthCheckEndpoint,
+		decodeHealthCheckRequest,
+		encodeJSONResponse,
+		options...,
+	))
+
 	return r
 }
-func decodeCommentsListRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+
+func decodeHealthCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	return endpoint.HealthRequest{}, nil
+}
+
+func decodeGoodsDetailRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	id := r.URL.Query().Get("id")
 
 	if id == "" {
 		return nil, ErrorBadRequest
 	}
-	return endpoint.CommentsListRequest{
+	return endpoint.GoodsDetailRequest{
 		Id: id,
 	}, nil
 }
