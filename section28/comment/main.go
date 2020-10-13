@@ -21,7 +21,7 @@ func main() {
 
 	consulAddr := flag.String("consul.addr", "localhost", "consul address")
 	consulPort := flag.Int("consul.port", 8500, "consul port")
-	servicePort := flag.Int("service.port", 12312, "service port")
+	servicePort := flag.Int("service.port", 13312, "service port")
 	serviceName := flag.String("service.name", "comment", "service name")
 	serviceAddr := flag.String("service.addr", "127.0.0.1", "service addr")
 	flag.Parse()
