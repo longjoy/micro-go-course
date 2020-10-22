@@ -1,0 +1,13 @@
+
+1 部署docker
+docker run   -p 2379:2379   -p 2380:2380   --mount type=bind,source=/tmp/etcd-data.tmp,destination=/etcd-data   --name etcd-gcr-v3.4.7   gcr.io/etcd-development/etcd:v3.4.7   /usr/local/bin/etcd   --name s1   --data-dir /etcd-data   --listen-client-urls http://0.0.0.0:2379   --advertise-client-urls http://0.0.0.0:2379   --listen-peer-urls http://0.0.0.0:2380   --initial-advertise-peer-urls http://0.0.0.0:2380   --initial-cluster s1=http://0.0.0.0:2380   --initial-cluster-token tkn   --initial-cluster-state new   --log-level info   --logger zap   --log-outputs stderr
+
+2 进入容器
+
+docker exec -it 127211f71a26[设置自己运行容器的ID] /sh
+
+3 设置属性值
+
+etcdctl put call_service_d "0" 表示降级，不调用
+etcdctl put call_service_d "1" 表示不降级，调用
+
